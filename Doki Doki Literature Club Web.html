@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doki Doki Literature Club Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ddlc-pink: #f7a7d0;
+      --ddlc-dark-pink: #e25b98;
+      --ddlc-deep-pink: #ba2f6e;
+      --monika-green: #2ecc71;
+      --sayori-blue: #3498db;
+      --natsuki-pink: #ff6b81;
+      --yuri-purple: #9b59b6;
+      --bg-dots: #fca2cd;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --font-main: 'Quicksand', sans-serif;
+      --font-title: 'M PLUS Rounded 1c', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background-color: #ffdeed;
+      background-image: radial-gradient(var(--bg-dots) 18%, transparent 19%), radial-gradient(var(--bg-dots) 18%, transparent 19%);
+      background-size: 50px 50px;
+      background-position: 0 0, 25px 25px;
+      color: #333;
+      overflow-x: hidden;
+      transition: filter 0.3s ease;
+    }
+
+    header {
+      background: white;
+      padding: 1rem 2rem;
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 4px solid var(--ddlc-dark-pink);
+      box-shadow: 0 4px 15px rgba(226, 91, 152, 0.2);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+
+    .logo-badge {
+      background: var(--ddlc-dark-pink); color: white;
+      font-family: var(--font-title); font-weight: 800; font-size: 1.1rem;
+      padding: 6px 14px; border-radius: 20px; box-shadow: 2px 2px 0 var(--ddlc-deep-pink);
+    }
+
+    header h1 { font-family: var(--font-title); color: var(--ddlc-dark-pink); font-size: 1.6rem; }
+
+    nav { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .nav-btn {
+      background: #fff; color: var(--ddlc-dark-pink);
+      border: 2px solid var(--ddlc-pink); padding: 8px 18px;
+      border-radius: 20px; font-family: var(--font-title); font-weight: 700;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover { background: var(--ddlc-pink); color: white; transform: translateY(-2px); }
+    .nav-btn.glitch-btn { background: var(--monika-green); color: white; border-color: #27ae60; }
+
+    /* REPRODUCTOR DE BGM */
+    .bgm-bar {
+      max-width: 1100px; margin: 1.5rem auto -0.5rem auto; padding: 0 1rem;
+      display: flex; justify-content: center;
+    }
+    .bgm-box {
+      background: white; border: 3px solid var(--ddlc-pink); border-radius: 25px;
+      padding: 10px 20px; display: flex; align-items: center; gap: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06); flex-wrap: wrap; justify-content: center;
+    }
+    .bgm-title { font-family: var(--font-title); font-weight: 800; color: var(--ddlc-dark-pink); font-size: 0.95rem; }
+    .music-btn {
+      background: var(--ddlc-dark-pink); color: white; border: none; padding: 6px 16px;
+      border-radius: 15px; font-family: var(--font-title); font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .music-btn:hover { background: var(--ddlc-deep-pink); }
+
+    .hero {
+      max-width: 1100px; margin: 2rem auto; padding: 2rem;
+      background: var(--card-bg); border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;
+      border: 3px solid white;
+    }
+
+    .hero-text h2 { font-family: var(--font-title); font-size: 2.2rem; color: var(--ddlc-deep-pink); margin-bottom: 1rem; }
+    .hero-text p { font-size: 1.1rem; line-height: 1.6; color: #555; margin-bottom: 1.5rem; }
+    
+    /* ENCUADRE COMPLETO SIN RECORTES */
+    .hero-img-container {
+      width: 100%; border-radius: 20px;
+      overflow: hidden; border: 4px solid white;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      background: #ffeef6; display: flex; align-items: center; justify-content: center;
+    }
+    .hero-img-container img { width: 100%; height: auto; display: block; object-fit: contain; }
+
+    .section-title { text-align: center; font-family: var(--font-title); font-size: 2.2rem; color: var(--ddlc-deep-pink); margin: 3rem 0 1.5rem 0; text-shadow: 2px 2px 0 white; }
+
+    .characters-grid {
+      max-width: 1100px; margin: 0 auto; padding: 0 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px;
+    }
+
+    .char-card {
+      background: white; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer; border: 4px solid white; display: flex; flex-direction: column;
+    }
+
+    .char-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(226, 91, 152, 0.25); }
+    
+    /* FOTOS COMPLETAS MOSTRANDO TODO EL SPRITE */
+    .char-img-wrap {
+      width: 100%; background: #ffeef6; display: flex;
+      justify-content: center; align-items: flex-end; padding: 10px 5px 0 5px;
+    }
+    .char-img-wrap img { width: 100%; height: auto; max-height: 500px; object-fit: contain; }
+
+    .char-info { padding: 1.2rem; text-align: center; }
+    .char-info h3 { font-family: var(--font-title); font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .char-info .click-hint { font-size: 0.8rem; color: #888; font-weight: bold; margin-top: 6px; }
+
+    .char-card.monika .char-info h3 { color: var(--monika-green); }
+    .char-card.sayori .char-info h3 { color: var(--sayori-blue); }
+    .char-card.natsuki .char-info h3 { color: var(--natsuki-pink); }
+    .char-card.yuri .char-info h3 { color: var(--yuri-purple); }
+
+    .api-section { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .api-box {
+      background: #ffffff; border: 3px solid var(--ddlc-pink);
+      border-radius: 20px; padding: 1.8rem 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .api-title { font-family: var(--font-title); color: var(--ddlc-deep-pink); font-size: 1.4rem; font-weight: 800; margin-bottom: 0.8rem; }
+    .api-quote { font-size: 1.15rem; font-style: italic; color: #444; margin-bottom: 0.8rem; min-height: 40px; display: flex; align-items: center; justify-content: center; line-height: 1.5; }
+    .api-author { font-weight: bold; color: var(--monika-green); font-family: var(--font-title); font-size: 1.05rem; }
+
+    .vn-section { max-width: 900px; margin: 3rem auto; padding: 0 1rem; }
+    .vn-box {
+      background: rgba(255, 255, 255, 0.95); border: 5px solid var(--ddlc-dark-pink);
+      border-radius: 20px; padding: 1.5rem 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .vn-header { font-family: var(--font-title); font-weight: 800; font-size: 1.3rem; color: var(--monika-green); margin-bottom: 0.8rem; }
+    .vn-text { font-size: 1.15rem; line-height: 1.6; min-height: 70px; color: #333; }
+    .vn-btn { background: var(--ddlc-dark-pink); color: white; border: none; padding: 8px 20px; border-radius: 15px; font-family: var(--font-title); font-weight: bold; cursor: pointer; float: right; margin-top: 1rem; }
+
+    .poem-section { max-width: 900px; margin: 3rem auto; padding: 0 1rem; }
+    .notebook-paper {
+      background: #ffffff;
+      background-image: linear-gradient(#e8f4f8 1px, transparent 1px);
+      background-size: 100% 32px;
+      border-radius: 20px;
+      border-left: 30px solid #ffb6c1;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      padding: 2.5rem 2rem 2rem 2.5rem;
+      position: relative;
+    }
+
+    .notebook-paper::before {
+      content: ''; position: absolute; top: 0; left: -18px; height: 100%; width: 4px;
+      border-left: 4px dotted #d9534f;
+    }
+
+    .poem-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+    .poem-title-badge { background: var(--ddlc-dark-pink); color: white; padding: 6px 16px; border-radius: 15px; font-family: var(--font-title); font-weight: bold; }
+    .poem-count-badge { font-family: var(--font-title); font-weight: bold; color: #555; background: #fff; padding: 6px 14px; border-radius: 15px; border: 2px solid #ddd; }
+
+    .chibis-row {
+      display: flex; justify-content: space-around; align-items: flex-end;
+      height: 150px; margin-bottom: 1.5rem; border-bottom: 2px dashed #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    .chibi-box { display: flex; flex-direction: column; align-items: center; position: relative; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .chibi-box.jump { transform: translateY(-30px) scale(1.1); }
+
+    .chibi-img-wrap {
+      width: 100px; height: 110px;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .chibi-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
+
+    .chibi-bubble {
+      position: absolute; top: -35px; background: white; border: 2px solid #333;
+      padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;
+      opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; z-index: 10;
+    }
+    .chibi-box.jump .chibi-bubble { opacity: 1; }
+
+    .words-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin: 1.5rem 0; }
+    .word-chip {
+      background: #ffffff; border: 2px solid var(--ddlc-pink);
+      color: #444; padding: 10px 14px; border-radius: 18px;
+      font-family: var(--font-title); font-weight: 700; font-size: 0.95rem;
+      cursor: pointer; transition: all 0.15s ease; text-align: center;
+      box-shadow: 0 3px 0 var(--ddlc-pink);
+    }
+    .word-chip:hover {
+      background: var(--ddlc-pink); color: white;
+      transform: translateY(-2px); box-shadow: 0 5px 0 var(--ddlc-dark-pink);
+    }
+
+    .poem-progress-bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 1.5rem; }
+    .progress-item { text-align: center; font-size: 0.9rem; font-weight: bold; }
+    .bar-bg { background: #eee; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 5px; border: 1px solid #ccc; }
+    .bar-fill { height: 100%; width: 0%; transition: width 0.3s ease; }
+
+    /* MODAL EXCLUSIVO DE EXPEDIENTES DETALLADOS */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); justify-content: center; align-items: center; z-index: 200; padding: 1rem; }
+    .modal-content {
+      background: white; padding: 2rem; border-radius: 20px; max-width: 600px; width: 100%;
+      max-height: 85vh; overflow-y: auto; text-align: left; position: relative;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.25); border: 4px solid var(--ddlc-pink);
+    }
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #999; line-height: 1; }
+    .close-btn:hover { color: var(--ddlc-dark-pink); }
+
+    .modal-body-grid { display: grid; grid-template-columns: 140px 1fr; gap: 15px; margin-top: 1rem; align-items: start; }
+    .modal-img-wrap { background: #fff0f6; border-radius: 12px; overflow: hidden; padding: 5px; border: 2px solid var(--ddlc-pink); }
+    .modal-img-wrap img { width: 100%; height: auto; object-fit: contain; }
+
+    .detail-tag { display: inline-block; background: #ffe3f0; color: var(--ddlc-deep-pink); padding: 3px 10px; border-radius: 12px; font-size: 0.82rem; font-weight: bold; margin-bottom: 5px; }
+    .trivia-list { margin-top: 10px; padding-left: 18px; font-size: 0.92rem; line-height: 1.5; color: #444; }
+    .trivia-list li { margin-bottom: 6px; }
+
+    .glitch-active { animation: glitch-anim 0.2s infinite; filter: invert(0.9) hue-rotate(150deg); }
+    @keyframes glitch-anim {
+      0% { transform: translate(0); }
+      20% { transform: translate(-4px, 4px); }
+      40% { transform: translate(-4px, -4px); }
+      60% { transform: translate(4px, 4px); }
+      80% { transform: translate(4px, -4px); }
+      100% { transform: translate(0); }
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      header { flex-direction: column; gap: 10px; text-align: center; }
+      .poem-progress-bars { grid-template-columns: 1fr; }
+      .modal-body-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+      .modal-img-wrap { width: 150px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="logo-badge">DDLC</span>
+      <h1>Literature Club Web</h1>
+    </div>
+    <nav>
+      <button class="nav-btn" onclick="scrollToSec('characters')">Integrantes</button>
+      <button class="nav-btn" onclick="scrollToSec('vn')">Diálogo</button>
+      <button class="nav-btn" onclick="scrollToSec('poem')">Poemas</button>
+      <button class="nav-btn glitch-btn" onclick="toggleGlitch()">Just Monika</button>
+    </nav>
+  </header>
+
+  <!-- REPRODUCTOR DE BGM OFICIAL DOKI DOKI -->
+  <div class="bgm-bar">
+    <div class="bgm-box">
+      <span class="bgm-title">🎵 Soundtrack Oficial: "Main Theme (Okay, Everyone!)"</span>
+      <button class="music-btn" id="musicToggleBtn" onclick="toggleMusic()">▶ Reproducir Música</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h2>¡Te damos la bienvenida al Club de Literatura!</h2>
+        <p>Un lugar donde la poesía, el romance y la amistad cobran vida. Conoce a las cuatro integrantes del club, descubre sus expedientes completos con datos detallados y escribe poemas para ganar su corazón.</p>
+        <button class="nav-btn" style="background: var(--ddlc-dark-pink); color: white;" onclick="scrollToSec('characters')">Explorar el Club</button>
+      </div>
+      <div class="hero-img-container">
+        <img src="images/Inicio.webp" alt="DDLC Club Group">
+      </div>
+    </section>
+
+    <section class="api-section">
+      <div class="api-box">
+        <div class="api-title">✨ Inspiración Poética del Día</div>
+        <div class="api-quote" id="apiQuote">Cargando pensamiento poético...</div>
+        <div class="api-author" id="apiAuthor"></div>
+        <button class="nav-btn" style="margin-top: 12px; font-size:0.85rem;" onclick="fetchQuote()">✨ Obtener Nueva Inspiración</button>
+      </div>
+    </section>
+
+    <h2 class="section-title" id="characters">Conoce a las Integrantes</h2>
+    <p style="text-align: center; margin-top: -1rem; margin-bottom: 1.5rem; color: #666; font-weight: bold;">(Haz clic en cada tarjeta para abrir su expediente con hartos datos)</p>
+    
+    <section class="characters-grid">
+      <!-- MONIKA -->
+      <div class="char-card monika" onclick="openCharModal('monika')">
+        <div class="char-img-wrap"><img src="images/Monika.webp" alt="Monika"></div>
+        <div class="char-info">
+          <h3>Monika</h3>
+          <p>Presidenta del Club</p>
+          <div class="click-hint">🔍 Ver expediente completo</div>
+        </div>
+      </div>
+
+      <!-- SAYORI -->
+      <div class="char-card sayori" onclick="openCharModal('sayori')">
+        <div class="char-img-wrap"><img src="images/Sayori.webp" alt="Sayori"></div>
+        <div class="char-info">
+          <h3>Sayori</h3>
+          <p>Vicepresidenta</p>
+          <div class="click-hint">🔍 Ver expediente completo</div>
+        </div>
+      </div>
+
+      <!-- NATSUKI -->
+      <div class="char-card natsuki" onclick="openCharModal('natsuki')">
+        <div class="char-img-wrap"><img src="images/Natsuki.webp" alt="Natsuki"></div>
+        <div class="char-info">
+          <h3>Natsuki</h3>
+          <p>Entusiasta del Manga</p>
+          <div class="click-hint">🔍 Ver expediente completo</div>
+        </div>
+      </div>
+
+      <!-- YURI -->
+      <div class="char-card yuri" onclick="openCharModal('yuri')">
+        <div class="char-img-wrap"><img src="images/Yuri.webp" alt="Yuri"></div>
+        <div class="char-info">
+          <h3>Yuri</h3>
+          <p>Amante de la Lectura</p>
+          <div class="click-hint">🔍 Ver expediente completo</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="vn-section" id="vn">
+      <h2 class="section-title">Habla con Monika</h2>
+      <div class="vn-box">
+        <div class="vn-header" id="vnSpeaker">Monika</div>
+        <div class="vn-text" id="vnText">¡Hola! Qué alegría verte por aquí. ¿Listo para compartir tu primer poema con el club?</div>
+        <button class="vn-btn" onclick="nextDialogue()">Siguiente ▶</button>
+      </div>
+    </section>
+
+    <!-- MINIJUEGO DE POEMAS -->
+    <section class="poem-section" id="poem">
+      <h2 class="section-title">Escribe un Poema</h2>
+      <div class="notebook-paper">
+        <div class="poem-header">
+          <span class="poem-title-badge">Cuaderno del Club</span>
+          <span class="poem-count-badge">Palabras elegidas: <span id="wordCount">0</span>/20</span>
+        </div>
+
+        <div class="chibis-row">
+          <div class="chibi-box" id="chibi-sayori">
+            <div class="chibi-bubble">¡Me encanta!</div>
+            <div class="chibi-img-wrap"><img src="images/Sayori_chibi.webp" alt="Sayori Sticker"></div>
+            <span style="font-size:0.85rem; font-weight:bold; color:var(--sayori-blue); margin-top:4px;">Sayori</span>
+          </div>
+
+          <div class="chibi-box" id="chibi-natsuki">
+            <div class="chibi-bubble">¡E-Esa es buena!</div>
+            <div class="chibi-img-wrap"><img src="images/Natsuki_chibi.webp" alt="Natsuki Sticker"></div>
+            <span style="font-size:0.85rem; font-weight:bold; color:var(--natsuki-pink); margin-top:4px;">Natsuki</span>
+          </div>
+
+          <div class="chibi-box" id="chibi-yuri">
+            <div class="chibi-bubble">Qué profundo...</div>
+            <div class="chibi-img-wrap"><img src="images/Yuri_chibi.webp" alt="Yuri Sticker"></div>
+            <span style="font-size:0.85rem; font-weight:bold; color:var(--yuri-purple); margin-top:4px;">Yuri</span>
+          </div>
+        </div>
+
+        <div class="words-grid" id="wordsGrid"></div>
+
+        <div class="poem-progress-bars">
+          <div class="progress-item" style="color: var(--sayori-blue);">
+            Sayori: <span id="sSayori">0</span>
+            <div class="bar-bg"><div class="bar-fill" id="barSayori" style="background: var(--sayori-blue);"></div></div>
+          </div>
+          <div class="progress-item" style="color: var(--natsuki-pink);">
+            Natsuki: <span id="sNatsuki">0</span>
+            <div class="bar-bg"><div class="bar-fill" id="barNatsuki" style="background: var(--natsuki-pink);"></div></div>
+          </div>
+          <div class="progress-item" style="color: var(--yuri-purple);">
+            Yuri: <span id="sYuri">0</span>
+            <div class="bar-bg"><div class="bar-fill" id="barYuri" style="background: var(--yuri-purple);"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL CON EXPEDIENTE DETALLADO -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h2 id="mName" style="color: var(--ddlc-dark-pink); font-family: var(--font-title); font-size:1.8rem;"></h2>
+      <p id="mRole" style="color: #888; font-weight: bold; margin-top:-3px; margin-bottom: 0.5rem;"></p>
+      
+      <div class="modal-body-grid">
+        <div class="modal-img-wrap">
+          <img id="mImg" src="" alt="Personaje">
+        </div>
+        <div>
+          <span class="detail-tag" id="mAge">Edad: 18 años</span>
+          <span class="detail-tag" id="mHeight">Altura: --</span>
+          <p id="mDesc" style="line-height: 1.5; color: #444; margin-top:5px; font-size:0.95rem;"></p>
+        </div>
+      </div>
+
+      <hr style="margin: 1.2rem 0; border: none; border-top: 1px dashed var(--ddlc-pink);">
+      <h3 style="font-family: var(--font-title); color: var(--ddlc-deep-pink); font-size: 1.1rem; margin-bottom:0.4rem;">💡 Datos curiosos y Trivia del personaje:</h3>
+      <ul class="trivia-list" id="mTrivia"></ul>
+    </div>
+  </div>
+
+  <!-- MODAL GANADOR DEL POEMA -->
+  <div class="modal" id="poemWinModal">
+    <div class="modal-content" style="text-align:center;">
+      <h2 style="color: var(--ddlc-dark-pink); font-family: var(--font-title); margin-bottom: 0.5rem;">¡Poema Completado!</h2>
+      <p style="margin-bottom: 1rem; font-size: 1.1rem; color: #555;">Le has mostrado tu poema al club y...</p>
+      <div id="poemWinnerBox" style="padding: 1.2rem; border-radius: 15px; background: #fff5f9; margin-bottom: 1.5rem; border: 2px dashed var(--ddlc-pink);"></div>
+      <button class="nav-btn" style="background: var(--ddlc-dark-pink); color: white;" onclick="resetPoemGame()">Escribir otro poema</button>
+    </div>
+  </div>
+
+  <script>
+    /* DATOS DETALLADOS DE LAS CHICAS (DATOS HARTOS) */
+    const characterData = {
+      monika: {
+        name: "Monika",
+        role: "Presidenta del Club de Literatura",
+        age: "Edad: 18 años (22 de septiembre)",
+        height: "Altura: 1.60 m (5'3\")",
+        img: "images/Monika2.webp",
+        desc: "Líder natural, carismática y atlética. Era miembro del club de debate antes de fundar el Club de Literatura para crear un espacio libre de juicios.",
+        trivia: [
+          " Es el único personaje del juego que viste calcetas negras sobre la rodilla y zapatos de punta rosa, a diferencia de las demás chicas.",
+          " Su nombre es de origen europeo oriental y no termina en 'i', a diferencia de Sayori, Natsuki y Yuri.",
+          " Es la única integrante que mira directamente hacia la pantalla del jugador en casi todos sus sprites.",
+          " Su instrumento musical principal es el piano y compuso el tema 'Your Reality'.",
+          " Es vegetariana porque busca reducir la huella de carbono en el planeta.",
+          " Cuenta con su propia cuenta oficial en Twitter (@lilmonix3)."
+        ]
+      },
+      sayori: {
+        name: "Sayori",
+        role: "Vicepresidenta del Club",
+        age: "Edad: 18 años (11 de mayo)",
+        height: "Altura: 1.57 m (5'2\")",
+        img: "images/Sayori2.webp",
+        desc: "Tu mejor amiga desde la infancia. Siempre radiante, alegre y dispuesta a mediar para que todos en el club se lleven bien.",
+        trivia: [
+          " Su accesorio característico es un lazo rojo grande en el cabello y suele llevar la chaqueta del uniforme desabotonada.",
+          " Ama la comida, especialmente los cupcakes de Natsuki y las galletas recién horneadas.",
+          " Es la responsable de invitar al protagonista a unirse al Club de Literatura en el primer día.",
+          " Le gusta utilizar palabras alegres, luminosas y asociadas con la naturaleza y los sentimientos cálidos en sus poemas.",
+          " Ocupa el puesto de vicepresidenta antes de asumir el liderazgo del club en momentos clave."
+        ]
+      },
+      natsuki: {
+        name: "Natsuki",
+        role: "Miembro del Club / Experta en Repostería",
+        age: "Edad: 18 años (30 de julio)",
+        height: "Altura: 1.49 m (4'11\")",
+        img: "images/Natsuki2.webp",
+        desc: "Una chica tsundere que aparenta ser agresiva para protegerse, pero guarda un lado profundamente dulce y protector con sus amigos.",
+        trivia: [
+          " Es una apasionada defensora del manga como forma legítima de literatura, siendo su manga favorito 'Parfait Girls'.",
+          " Es la integrante con menor estatura del club y es una repostera experta, destacando sus cupcakes con forma de gatito.",
+          " Guarda toda su colección de manga en el estante del salón del club para evitar que se la quiten.",
+          " Sus palabras favoritas para poemas son simples, lindas, dulces y relacionadas con la comida.",
+          " Su estilo de poesía utiliza frases sencillas pero de un mensaje directo y muy conmovedor."
+        ]
+      },
+      yuri: {
+        name: "Yuri",
+        role: "Miembro del Club / Lectora Apasionada",
+        age: "Edad: 18 años",
+        height: "Altura: 1.65 m (5'5\")",
+        img: "images/Yuri2.webp",
+        desc: "La chica más alta, tímida y madura del club. Se expresa con elegancia y pasión cuando habla de sus novelas e historias favoritas.",
+        trivia: [
+          " Es la integrante más alta del club y posee una voz suave y pausada.",
+          " Su gran pasión es la literatura de terror psicológico y la fantasía profunda con mundos complejos.",
+          " Colecciona tés finos y juegos de té artesanales, sirviendo té habitualmente en las reuniones del club.",
+          " Colecciona navajas y objetos punzocortantes ornamentales por su estética y peso artesanal.",
+          " Le atraen los temas poéticos profundos, abstractos, sombríos, intelectuales y metafóricos."
+        ]
+      }
+    };
+
+    function openCharModal(key) {
+      const data = characterData[key];
+      document.getElementById('mName').textContent = data.name;
+      document.getElementById('mRole').textContent = data.role;
+      document.getElementById('mAge').textContent = data.age;
+      document.getElementById('mHeight').textContent = data.height;
+      document.getElementById('mImg').src = data.img;
+      document.getElementById('mDesc').textContent = data.desc;
+
+      const tList = document.getElementById('mTrivia');
+      tList.innerHTML = '';
+      data.trivia.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        tList.appendChild(li);
+      });
+
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+    /* REPRODUCTOR DE SOUNDTRACK CON SINTETIZADOR WEB AUDIO API */
+    let audioCtx = null;
+    let isPlaying = false;
+    let musicInterval = null;
+
+    const melody = [
+      { note: 659.25, duration: 250 }, // E5
+      { note: 659.25, duration: 250 }, // E5
+      { note: 659.25, duration: 250 }, // E5
+      { note: 523.25, duration: 250 }, // C5
+      { note: 659.25, duration: 350 }, // E5
+      { note: 783.99, duration: 450 }, // G5
+      { note: 392.00, duration: 450 }, // G4
+      { note: 523.25, duration: 300 }, // C5
+      { note: 659.25, duration: 300 }, // E5
+      { note: 783.99, duration: 300 }, // G5
+      { note: 880.00, duration: 300 }, // A5
+      { note: 698.46, duration: 300 }, // F5
+      { note: 783.99, duration: 300 }  // G5
+    ];
+
+    function playNote(freq, duration) {
+      if (!audioCtx || audioCtx.state === 'closed') return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (duration / 1000));
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + (duration / 1000));
+      } catch(e) {}
+    }
+
+    function toggleMusic() {
+      const btn = document.getElementById('musicToggleBtn');
+      if (!isPlaying) {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } else if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        isPlaying = true;
+        btn.textContent = '⏸ Pausar Música';
+        let step = 0;
+        musicInterval = setInterval(() => {
+          const noteData = melody[step % melody.length];
+          playNote(noteData.note, noteData.duration);
+          step++;
+        }, 320);
+      } else {
+        isPlaying = false;
+        btn.textContent = '▶ Reproducir Música';
+        if (musicInterval) clearInterval(musicInterval);
+      }
+    }
+
+    /* Consumo de Frases Poéticas */
+    const spanishQuotes = [
+      { quote: "Las palabras amables son las que mejor curan el corazón.", author: "Sayori" },
+      { quote: "Un poema no tiene que ser complicado para ser realmente hermoso.", author: "Natsuki" },
+      { quote: "En la profundidad de los libros encontramos los universos que nos faltan.", author: "Yuri" },
+      { quote: "La escritura es la manera de hacer eterno un sentimiento fugaz.", author: "Monika" },
+      { quote: "Un rayo de luz siempre encuentra su camino a través de las nubes.", author: "Sayori" },
+      { quote: "La repostería y la poesía requieren la misma dosis de dedicación y dulzura.", author: "Natsuki" }
+    ];
+
+    function fetchQuote() {
+      const qEl = document.getElementById('apiQuote');
+      const aEl = document.getElementById('apiAuthor');
+      const item = spanishQuotes[Math.floor(Math.random() * spanishQuotes.length)];
+      qEl.textContent = `"${item.quote}"`;
+      aEl.textContent = `— ${item.author}`;
+    }
+    fetchQuote();
+
+    /* Diálogos Visual Novel */
+    const dialogues = [
+      "¡Hola! Qué alegría verte por aquí. ¿Listo para compartir tu primer poema con el club?",
+      "Recuerda que escribir poesía se trata de expresar tus sentimientos sinceros.",
+      "A Sayori le gustan las palabras alegres y luminosas.",
+      "Natsuki prefiere palabras bonitas, dulces y sencillas.",
+      "Yuri busca conceptos profundos, misteriosos y poéticos.",
+      "Y yo... bueno, ¡yo siempre estaré aquí observándote!"
+    ];
+    let dIdx = 0;
+
+    function nextDialogue() {
+      dIdx = (dIdx + 1) % dialogues.length;
+      document.getElementById('vnText').textContent = dialogues[dIdx];
+    }
+
+    /* Banco de Palabras para el Poema */
+    const wordBank = {
+      sayori: ["Felicidad", "Sonrisa", "Sol", "Abrazo", "Alegría", "Cálido", "Juntos", "Jugar", "Flor", "Esperanza", "Día", "Cielo", "Placer", "Risa", "Amigos"],
+      natsuki: ["Dulce", "Pastel", "Manga", "Lindo", "Fresa", "Vainilla", "Beso", "Esponjoso", "Cinta", "Secreto", "Pirulí", "Gatito", "Mejillas", "Caramelo"],
+      yuri: ["Misterio", "Oscuridad", "Elegancia", "Filosofía", "Universo", "Gótico", "Melancolía", "Destino", "Esencia", "Intelecto", "Eterno", "Lluvia", "Océano", "Profundo"]
+    };
+
+    let pScores = { sayori: 0, natsuki: 0, yuri: 0 };
+    let totalPicked = 0;
+    const MAX_WORDS = 20;
+
+    function getRandomWords() {
+      let currentPool = [];
+      ['sayori', 'natsuki', 'yuri'].forEach(char => {
+        let shuffled = [...wordBank[char]].sort(() => 0.5 - Math.random());
+        shuffled.slice(0, 4).forEach(w => currentPool.push({ text: w, char: char }));
+      });
+      return currentPool.sort(() => 0.5 - Math.random());
+    }
+
+    function renderWords() {
+      const grid = document.getElementById('wordsGrid');
+      grid.innerHTML = '';
+      const words = getRandomWords();
+      words.forEach(w => {
+        const btn = document.createElement('button');
+        btn.className = 'word-chip';
+        btn.textContent = w.text;
+        btn.onclick = () => pickWord(w.char);
+        grid.appendChild(btn);
+      });
+    }
+
+    function pickWord(char) {
+      if (totalPicked >= MAX_WORDS) return;
+
+      pScores[char]++;
+      totalPicked++;
+
+      document.getElementById('wordCount').textContent = totalPicked;
+      document.getElementById('s' + char.charAt(0).toUpperCase() + char.slice(1)).textContent = pScores[char];
+
+      document.getElementById('barSayori').style.width = (pScores.sayori / MAX_WORDS * 100) + '%';
+      document.getElementById('barNatsuki').style.width = (pScores.natsuki / MAX_WORDS * 100) + '%';
+      document.getElementById('barYuri').style.width = (pScores.yuri / MAX_WORDS * 100) + '%';
+
+      const chibiBox = document.getElementById('chibi-' + char);
+      chibiBox.classList.add('jump');
+      setTimeout(() => chibiBox.classList.remove('jump'), 400);
+
+      if (totalPicked >= MAX_WORDS) {
+        showPoemWinner();
+      } else {
+        renderWords();
+      }
+    }
+
+    function showPoemWinner() {
+      let winner = 'sayori';
+      if (pScores.natsuki > pScores[winner]) winner = 'natsuki';
+      if (pScores.yuri > pScores[winner]) winner = 'yuri';
+
+      const winnerData = {
+        sayori: { name: "Sayori", msg: "¡Waaaa! ¡Me encantó tu poema! Está lleno de calidez y luz, ¡es justo lo que necesitaba hoy!", color: "var(--sayori-blue)" },
+        natsuki: { name: "Natsuki", msg: "¡Hmph! B-Bueno... supongo que no está nada mal. ¡Atrapaste totalmente el ritmo dulce que me gusta!", color: "var(--natsuki-pink)" },
+        yuri: { name: "Yuri", msg: "Es... verdaderamente fascinante. La profundidad de tus palabras resuena en mi corazón.", color: "var(--yuri-purple)" }
+      };
+
+      const w = winnerData[winner];
+      document.getElementById('poemWinnerBox').innerHTML = `
+        <h3 style="color:${w.color}; font-family:var(--font-title); font-size:1.4rem; margin-bottom:0.5rem;">¡A ${w.name} le ha encantado!</h3>
+        <p style="font-style:italic; color:#444;">"${w.msg}"</p>
+      `;
+      document.getElementById('poemWinModal').style.display = 'flex';
+    }
+
+    function resetPoemGame() {
+      pScores = { sayori: 0, natsuki: 0, yuri: 0 };
+      totalPicked = 0;
+      document.getElementById('wordCount').textContent = '0';
+      ['Sayori', 'Natsuki', 'Yuri'].forEach(c => {
+        document.getElementById('s' + c).textContent = '0';
+        document.getElementById('bar' + c).style.width = '0%';
+      });
+      document.getElementById('poemWinModal').style.display = 'none';
+      renderWords();
+    }
+
+    function scrollToSec(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+    function toggleGlitch() { document.body.classList.toggle('glitch-active'); }
+
+    renderWords();
+  </script>
+</body>
+</html>
